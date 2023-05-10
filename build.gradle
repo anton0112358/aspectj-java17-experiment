@@ -1,34 +1,36 @@
 plugins {
-    id ‘java’
+    id 'application'
+    id 'java'
 }
-group ‘com.example’
-version ‘1.0-SNAPSHOT’
+group 'com.example'
+version '1.0-SNAPSHOT'
 sourceCompatibility = 17
 targetCompatibility = 17
 repositories {
     mavenCentral()
+    jcenter()
 }
 configurations {
     aspectjweaver
 }
 dependencies {
-    implementation ‘org.aspectj:aspectjrt:1.9.7’
-    aspectjweaver ‘org.aspectj:aspectjweaver:1.9.7’
+    implementation 'org.aspectj:aspectjrt:1.9.7'
+    aspectjweaver 'org.aspectj:aspectjweaver:1.9.7'
 }
 // Post-compile weaving with AspectJ
 compileJava {
     doLast {
-        ant.taskdef(resource: ‘org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties’,
+        ant.taskdef(resource: 'org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties',
                     classpath: configurations.aspectjweaver.asPath)
         ant.iajc(
                 source: sourceCompatibility,
                 target: targetCompatibility,
                 destDir: sourceSets.main.output.classesDirs.singleFile,
-                maxmem: ‘512m’,
-                fork: ‘true’,
-                verbose: ‘true’,
+                maxmem: '512m',
+                fork: 'true',
+                verbose: 'true',
                 aspectPath: configurations.aspectjweaver.asPath,
-                sourceRootCopyFilter: ‘**/.svn/*,**/*.java,**/*.aj’,
+                sourceRootCopyFilter: '**/.svn/*,**/*.java,**/*.aj',
                 classpath: configurations.compileClasspath.asPath
         )
     }
