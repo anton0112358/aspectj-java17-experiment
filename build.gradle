@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'application'
-    id "io.freefair.aspectj.post-compile-weaving" version "6.3.0"
 }
 
 group 'com.example'
@@ -17,13 +16,29 @@ repositories {
     jcenter()
 }
 
-dependencies {
-    implementation 'org.aspectj:aspectjrt:1.9.7'
+configurations {
+    aspectjWeaver
 }
 
+dependencies {
+    implementation 'org.aspectj:aspectjrt:1.9.8'
+    implementation 'org.aspectj:aspectjweaver:1.9.8'
+    aspectjWeaver 'org.aspectj:aspectjtools:1.9.8'
+}
 
+tasks.register('weaveClasses', JavaExec) {
+    inputs.files(sourceSets.main.output.classesDirs)
+    classpath configurations.aspectjWeaver
+    main = 'org.aspectj.tools.ajc.Main'
+    args = [
+            '-inpath', sourceSets.main.output.classesDirs.singleFile,
+            '-aspectpath', configurations.aspectjWeaver.asPath,
+            '-d', sourceSets.main.output.classesDirs.singleFile,
+            '-classpath', configurations.compileClasspath.asPath
+    ]
+    dependsOn compileJava
+}
 
-
-
-
-
+run {
+    dependsOn weaveClasses
+}
